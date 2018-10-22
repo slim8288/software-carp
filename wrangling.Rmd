@@ -7,6 +7,8 @@ output: html_document
 
 ##Data wrangling
 
+Looking at our data
+
 ```{r}
 library(tidyverse)  # install.packages("tidyverse")
 
@@ -27,5 +29,63 @@ skimr::skim(gapminder)  # install.packages("skimr")
 names(gapminder)  #column names
 dim(gapminder)
 ncol(gapminder)  # or nrow
+```
+
+#Dplyr
+
+Filter
+```{r}
+
+```
+
+```{r}
+# Filter by rows
+filter(gapminder, lifeExp < 29)
+filter(gapminder, country == "Mexico")
+filter(gapminder, country %in% c("Mexico", "Peru"))
+
+filter(gapminder, country == "Mexico", year == 2002)
+
+# mean life expectancy in Sweden
+swedes = filter(gapminder, country == "Sweden")
+mean(swedes$lifeExp)  # $ looks at a column in a dataframe
+```
+
+Select
+
+```{r}
+# Select by columns
+select(gapminder, year, lifeExp)
+select(gapminder, -continent, -lifeExp)  # exclude columns
+```
+
+Piping!
+
+```{r}
+gap_cambodia <- filter(gapminder, country == "Cambodia") %>% select(-continent, -lifeExp)
+gap_cambodia_alt <- gapminder %>% filter(country == "Cambodia") %>% select(-continent, -lifeExp)
+
+# convention is
+gap_cambodia_alt2 <- gapminder %>%
+  filter(country == "Cambodia") %>%
+  select(-continent, -lifeExp)
+```
+
+Mutate
+Note that we use = inside functions; distinct from the <- to assign variables
+
+```{r}
+# mutate adds new variables
+
+gapminder %>%
+  mutate(index = 1:nrow(gapminder))  # created a new column called index that has numbers from 1 to the length of gapminder
+
+gapminder %>%
+  mutate(gdp = pop * gdpPercap)
+
+gapminder %>% 
+  filter(country %in% c("Egypt", "Vietnam")) %>%
+  mutate(gdp = pop * gdpPercap,
+         max_gdp = max(gdp))
 ```
 
