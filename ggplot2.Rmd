@@ -6,3 +6,142 @@ output: html_document
 ---
 
 # learning ggplot2
+```{r, echo=FALSE}
+
+#install.packages('tidyverse')
+library(tidyverse)
+
+#National Parks in California
+ca <- read_csv("https://raw.githubusercontent.com/OHI-Science/data-science-training/master/data/ca.csv") 
+
+#Acadia National Park
+acadia <- read_csv("https://raw.githubusercontent.com/OHI-Science/data-science-training/master/data/acadia.csv")
+
+#Southeast US National Parks
+se <- read_csv("https://raw.githubusercontent.com/OHI-Science/data-science-training/master/data/se.csv")
+
+#2016 Visitation for all Pacific West National Parks
+visit_16 <- read_csv("https://raw.githubusercontent.com/OHI-Science/data-science-training/master/data/visit_16.csv")
+
+#All Nationally designated sites in Massachusetts
+mass <- read_csv("https://raw.githubusercontent.com/OHI-Science/data-science-training/master/data/mass.csv")
+
+```
+
+Look at dataset
+
+```{r}
+head(ca)
+View(ca) #produces a little spreadsheet within R
+```
+
+# Single plots
+
+1. tell ggplot what data you're using
+2. create a geom (what type of plot) with aes (where should the actual points be)
+
+```{r}
+ggplot(data=ca) +
+  geom_point(aes(x=year, y=visitors))
+```
+
+```{r}
+ggplot(data=ca) +
+  geom_point(aes(x=year, y=visitors, color=park_name))
+```
+
+```{r}
+ggplot(data=ca) +
+  geom_point(aes(x=year, y=visitors, color=park_name)) +
+  labs(x = "Year",
+       y = "Visitation",
+       title = "California National Park Visitation") +
+  theme_bw() + #changed background theme to a different one
+  theme(legend.title = element_blank()) #removed title from legend
+```
+
+```{r}
+ggplot(data=se) +
+  geom_point(aes(x=year, y = visitors, color=park_name))
+```
+
+```{r}
+ggplot(data=se) +
+  geom_point(aes(x=year, y=visitors, color=state)) +
+  xlab("Year") + 
+  ylab("Visitation") +
+  ggtitle("Southeast National Park Visitation") +
+  theme_classic() +
+  theme(legend.title = element_blank(),
+        axis.text.x = element_text(angle=45, size=12, hjust = 1))
+```
+
+# Faceting plots
+
+This makes subplots
+
+```{r}
+ggplot(data=se) +
+  geom_point(aes(x=year, y=visitors)) +
+  facet_wrap(~ state)
+```
+
+Free scales from each other. Also note that the color applies to the entire aes
+
+```{r}
+ggplot(data=se) +
+  geom_point(aes(x=year, y=visitors, color=park_name)) +
+  facet_wrap(~ state, scales="free")
+```
+
+Different geoms will give you different types of graphs. For things that are not dependent on the data, change options within the geom but outside the aes.
+
+```{r}
+ggplot(data = se) +
+  geom_jitter(aes(x = park_name, y = visitors), alpha = 0.4, width = 0.1, color="blue") +
+  coord_flip()
+```
+
+You can layer multiple geoms.
+
+```{r}
+ggplot(data = acadia) +
+  geom_point(aes(x = year, y = visitors)) +
+  geom_line(aes(x = year, y = visitors)) +
+  geom_smooth(aes(x = year, y = visitors))
+```
+
+OR a more succient code
+
+```{r}
+ggplot(data = acadia, aes(x = year, y = visitors)) +
+  geom_point() +
+  geom_line() +
+  geom_smooth()
+```
+
+You can also define data within the geom if you're overlaying from different datasets.
+
+# Bar charts
+
+Bar wants only an x and then it will count how many of each x. In order to use y as the height of each type in x, you have to do the stat = "identity"
+```{r}
+ggplot(data = visit_16, aes(x = state, y = visitors)) +
+  geom_bar(stat = "identity")
+```
+
+```{r}
+ggplot(data = visit_16, aes(x = state, y = visitors, fill = park_name)) +
+  geom_bar(stat = "identity")
+```
+
+# Saving ggplots 
+```{r}
+myplot <- ggplot(data = visit_16, aes(x = state, y = visitors, fill = park_name)) +
+  geom_bar(stat = "identity", position = "dodge")
+
+myplot
+
+ggsave(filename = "myplot.png", myplot)
+```
+
