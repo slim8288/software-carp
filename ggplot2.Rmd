@@ -145,3 +145,11 @@ myplot
 ggsave(filename = "myplot.png", myplot)
 ```
 
+Create an interactive plot
+
+```{r}
+library(plotly)
+
+ggplotly(myplot)
+```
+
