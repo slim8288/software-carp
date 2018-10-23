@@ -116,3 +116,30 @@ gap_summarized <- gapminder %>%
   arrange(desc(max_gdp))  # descending order
 ```
 
+Joining datasets
+(helpful graphics in book)
+
+```{r}
+# read in the data. (same URL as yesterday, with co2.csv instead of gapminder.csv)
+co2 <- read_csv("https://raw.githubusercontent.com/OHI-Science/data-science-training/master/data/co2.csv")
+
+# explore
+co2 %>% head()
+co2 %>% dim()  # 12 observations
+
+# create a new gapminder variable with only 2007 data
+gap_2007 <- gapminder %>% 
+  filter(year == 2007)
+
+gap_2007 %>% dim()  # 142 observations
+
+# left join
+lj <- left_join(gap_2007, co2, by = "country")  # 142 observations
+# or
+lj <- gap_2007 %>% 
+  left_join(co2, by = "country")
+
+# right join
+rj <- right_join(gap_2007, co2)  # if you don't specify what to join by, it will guess
+```
+
