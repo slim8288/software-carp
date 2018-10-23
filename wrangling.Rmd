@@ -31,7 +31,7 @@ dim(gapminder)
 ncol(gapminder)  # or nrow
 ```
 
-#Dplyr
+#dplyr
 
 Filter
 
@@ -142,4 +142,70 @@ lj <- gap_2007 %>%
 # right join
 rj <- right_join(gap_2007, co2)  # if you don't specify what to join by, it will guess
 ```
+
+#tidyr
+
+```{r}
+# read in gapminder data in wide format
+gap_wide <- readr::read_csv('https://raw.githubusercontent.com/OHI-Science/data-science-training/master/data/gapminder_wide.csv')
+```
+
+Gather
+
+```{r}
+gap_long <- gap_wide %>% 
+  gather(key = obstype_year,
+         value = obs_values,
+         -continent, -country)
+```
+
+Separate
+
+```{r}
+gap_long <- gap_wide %>% 
+  gather(key = obstype_year,
+         value = obs_values,
+         -continent, -country) %>%
+  separate(col = obstype_year,
+           into = c("obs_type","year"),
+           sep = "_",
+           convert=TRUE)
+  # year was read as a character because it was split from a character; that's why we use convert
+```
+
+Plot long data
+
+```{r}
+# plot life expectancy in Canada
+canada_df <- gap_long %>% 
+  filter(country == "Canada", obs_type == "lifeExp")
+
+ggplot(data = canada_df, aes(x = year, y = obs_values)) +
+  geom_line()
+
+# plot life expectancy of all countries in the Americas
+life_df <-gap_long %>% 
+  filter(obs_type == "lifeExp",
+         continent == "Americas")
+
+ggplot(data = life_df, aes(x = year, y = obs_values, color = country)) +
+  geom_line()
+
+# plot mean life expectancy for each continent over time from 1982 to 2007
+mean_life <- gap_long %>%
+  filter(year >= 1982,
+         year <= 2007,
+         obs_type == "lifeExp") %>%
+  group_by(year, continent) %>% 
+  summarize(mean_lifeExp = mean(obs_values)) %>% 
+  ungroup()
+
+ggplot(data = mean_life, aes(x = year, y = mean_lifeExp, color = continent)) +
+  geom_line() +
+  labs(x = "Year",
+       y = "Mean Life Expectancy") +
+  theme_bw() +
+  theme(legend.title = element_blank())
+```
+
 
