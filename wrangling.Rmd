@@ -34,9 +34,6 @@ ncol(gapminder)  # or nrow
 #Dplyr
 
 Filter
-```{r}
-
-```
 
 ```{r}
 # Filter by rows
@@ -86,6 +83,36 @@ gapminder %>%
 gapminder %>% 
   filter(country %in% c("Egypt", "Vietnam")) %>%
   mutate(gdp = pop * gdpPercap,
-         max_gdp = max(gdp))
+         max_gdp = max(gdp))  # can mutate two columns within mutate
+```
+
+Groupby - make sure you ungroup at the end!
+
+```{r}
+# with mutate()
+gap_grouped <- gapminder %>% 
+  group_by(country) %>% 
+  mutate(gdp = pop * gdpPercap,
+         max_gdp = max(gdp)) %>% 
+  ungroup()
+
+# with summarize()
+gap_summarized <- gapminder %>% 
+  group_by(country) %>% 
+  mutate(gdp = pop * gdpPercap) %>% 
+  summarize(max_gdp = max(gdp)) %>%
+  ungroup()
+```
+
+Arrange
+
+```{r}
+# arranges columns
+gap_summarized <- gapminder %>% 
+  group_by(country) %>% 
+  mutate(gdp = pop * gdpPercap) %>% 
+  summarize(max_gdp = max(gdp)) %>%
+  ungroup() %>% 
+  arrange(desc(max_gdp))  # descending order
 ```
 
